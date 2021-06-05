@@ -14,19 +14,20 @@ class JwtUtilTest {
 
     private static final String SECRET = "12345678901234567890123456789012";
 
-    private static final String UUID = "2f48f241-9d64-4d16-bf56-70b9d4e0e79a";
+    private static final String UserId = "2f48f241-9d64-4d16-bf56-70b9d4e0e79a";
 
     private static final String VALID_TOKEN = "eyJhbGciOiJIUzI1NiJ9." +
-            "eyJ1dWlkIjoiMmY0OGYyNDEtOWQ2NC00ZDE2LWJmNTYtNzBiOWQ0ZTBlNzlhIiwiZXhwIjoxNjIyNjM2Nzc3fQ.J" +
-            "gzsO-ovbRtts6ufTaix37R12T5Ngqd4cnxIxJ1IgOQ";
+            "eyJ1c2VySWQiOiIyZjQ4ZjI0MS05ZDY0LTRkMTYtYmY1Ni03MGI5ZDRlMGU3OWEifQ." +
+            "diJ35TNZtRqYIkkiUZX0JC0IQ_Yia8c5p8FDd_FMgYo";
 
     private static final String INVALID_TOKEN = "eyJhbGciOiJIUzI1NiJ9." +
             "eyJ1dWlkIjoiMmY0OGYyNDEtOWQ2NC00ZDE2LWJmNTYtNzBiOWQ0ZTBlNzlhIiwiZXhwIjoxNjIyNjM2Nzc3fQ.J" +
             "gzsO-ovbRtts6ufTaix37R12T5Ngqd4cnxIgOQIxJ1";
 
     private static final String EXPIRED_TOKEN = "eyJhbGciOiJIUzI1NiJ9." +
-            "eyJ1dWlkIjoiMmY0OGYyNDEtOWQ2NC00ZDE2LWJmNTYtNzBiOWQ0ZTBlNzlhIiwiZXhwIjoxNjIyNTUxODM3fQ." +
-            "m5iXy-hHw5lIAoSBXKq_-9BWD_5NlXI3xe_6hN4h8G8";
+            "eyJ1c2VySWQiOiIyZjQ4ZjI0MS05ZDY0LTRkMTYtYmY1Ni03MGI5ZDRlMGU3OWEiLCJleHAiOjE2MjI2MzE2Nzd9." +
+            "75VsVNYXpd7_SZDS1jZFh_4LVaFmRzZmW5XFfpWKC5g";
+    ;
 
     @BeforeEach
     void setUp() {
@@ -36,9 +37,9 @@ class JwtUtilTest {
     @Test
     @DisplayName("토큰 생성 - 정상 입력")
     void generate_token_valid() {
-        String accessToken = jwtUtil.generateToken(UUID, TokenType.ACCESS_TOKEN);
-        String refreshToken = jwtUtil.generateToken(UUID, TokenType.REFRESH_TOKEN);
-
+        String accessToken = jwtUtil.generateToken(UserId, TokenType.ACCESS_TOKEN);
+        String refreshToken = jwtUtil.generateToken(UserId, TokenType.REFRESH_TOKEN);
+        System.out.println(accessToken);
         assertAll(
                 () -> assertNotNull(accessToken),
                 () -> assertNotNull(refreshToken),
@@ -52,7 +53,7 @@ class JwtUtilTest {
     void parse_token_valid() {
         Claims parsedClaim = jwtUtil.parseToken(VALID_TOKEN);
 
-        assertEquals(parsedClaim.get("uuid", String.class), UUID);
+        assertEquals(parsedClaim.get("userId", String.class), UserId);
     }
 
     @Test
@@ -73,5 +74,7 @@ class JwtUtilTest {
                 TokenExpiredException.class,
                 () -> jwtUtil.parseToken(EXPIRED_TOKEN)
         );
+
+        assertNotNull(exception.getMessage());
     }
 }

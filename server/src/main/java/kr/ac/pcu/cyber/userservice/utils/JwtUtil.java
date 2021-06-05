@@ -16,10 +16,8 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    private final int ONE_DAY = 1000 * 60 * 60 * 24;
-    private final int ONE_MONTH = (1000 * 60 * 60 * 24) * 30;
-
-    private Date now = new Date();
+    private final long ONE_DAY = 1000L * 60 * 60 * 24;
+    private final long ONE_MONTH = 1000L * 60 * 60 * 24 * 30;
 
     private final Key key;
 
@@ -30,22 +28,26 @@ public class JwtUtil {
     /**
      * 사용자 UUID 와 TokenType 을 를 받아 access, refresh 생성
      *
-     * @param uuid 사용자 UUID
+     * @param userId 사용자 UUID
      * @param type AccessToken, RefreshToken 타입
      * @return Jwt 토큰
      */
-    public String generateToken(String uuid, TokenType type) {
+    public String generateToken(String userId, TokenType type) {
+
+        long now = new Date().getTime();
 
         Date expiredAt;
 
         if(type.equals(TokenType.ACCESS_TOKEN)) { // accessToken 일 때
-            expiredAt = new Date(now.getTime() + ONE_DAY);
-        }else { // refreshToken 일 때
-            expiredAt = new Date(now.getTime() + ONE_MONTH);
+            expiredAt = new Date(now + ONE_DAY);
+        }else if(type.equals(TokenType.REFRESH_TOKEN)){ // refreshToken 일 때
+            expiredAt = new Date(now + ONE_MONTH);
+        }else {
+            expiredAt = null;
         }
 
         return Jwts.builder()
-                .claim("uuid", uuid)
+                .claim("userId", userId)
                 .setExpiration(expiredAt)
                 .signWith(key)
                 .compact();

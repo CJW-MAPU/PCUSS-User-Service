@@ -12,7 +12,7 @@ public class AuthResponseData {
     private String accessToken;
     private String refreshToken;
     private String nickname;
-    private String profileUrl;
+    private String profileImage;
 
     public void complete(String accessToken, String refreshToken) {
         this.accessToken = accessToken;
