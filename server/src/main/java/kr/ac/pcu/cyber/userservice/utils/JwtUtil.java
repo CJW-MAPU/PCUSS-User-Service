@@ -16,8 +16,8 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    private final long ONE_DAY = 1000L * 60 * 60 * 24;
-    private final long ONE_MONTH = 1000L * 60 * 60 * 24 * 30;
+    private final int ONE_DAY = 1000 * 60 * 60 * 24;
+    private final int TWO_WEEK = 1000 * 60 * 60 * 24 * 14;
 
     private final Key key;
 
@@ -41,7 +41,7 @@ public class JwtUtil {
         if(type.equals(TokenType.ACCESS_TOKEN)) { // accessToken 일 때
             expiredAt = new Date(now + ONE_DAY);
         }else if(type.equals(TokenType.REFRESH_TOKEN)){ // refreshToken 일 때
-            expiredAt = new Date(now + ONE_MONTH);
+            expiredAt = new Date(now + TWO_WEEK);
         }else {
             expiredAt = null;
         }

@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 import javax.servlet.http.Cookie;
 import java.util.ArrayList;
@@ -138,10 +139,11 @@ class AuthenticationServiceTest {
     void silentRefresh_invalid() {
 
         MockHttpServletRequest request = new MockHttpServletRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
 
         EmptyCookieException exception = assertThrows(
                 EmptyCookieException.class,
-                () -> authenticationService.silentRefresh(request)
+                () -> authenticationService.silentRefresh(request, response)
         );
 
         assertNotNull(exception);

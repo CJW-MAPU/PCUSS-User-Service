@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'kr.ac.pcu.cyber'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.1'
 sourceCompatibility = '11'
 
 configurations {
@@ -31,6 +31,9 @@ dependencies {
 
     // jpa
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    // h2 db
+    runtimeOnly 'com.h2database:h2'
 
     // security
     implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -68,8 +71,7 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
-    // h2 db
-    runtimeOnly 'com.h2database:h2'
+
 
 
     // test

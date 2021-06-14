@@ -3,6 +3,7 @@ package kr.ac.pcu.cyber.userservice.service;
 import io.jsonwebtoken.Claims;
 import kr.ac.pcu.cyber.userservice.domain.dto.AuthResponseData;
 import kr.ac.pcu.cyber.userservice.domain.dto.RegisterRequestData;
+import kr.ac.pcu.cyber.userservice.domain.dto.SilentRefreshResponseData;
 import kr.ac.pcu.cyber.userservice.domain.entity.Role;
 import kr.ac.pcu.cyber.userservice.domain.entity.RoleType;
 import kr.ac.pcu.cyber.userservice.domain.entity.User;
@@ -19,8 +20,10 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -87,7 +90,7 @@ public class AuthenticationService {
      *
      * @param request
      */
-    public Cookie silentRefresh(HttpServletRequest request) {
+    public SilentRefreshResponseData silentRefresh(HttpServletRequest request, HttpServletResponse response) {
 
         if(request.getCookies() == null) {
             throw new EmptyCookieException();
@@ -102,8 +105,13 @@ public class AuthenticationService {
 
         String newAccessToken = jwtUtil.generateToken(userId, TokenType.ACCESS_TOKEN);
 
+        Cookie newToken = cookieUtil.createCookieWithToken(newAccessToken, TokenType.ACCESS_TOKEN);
+        response.addCookie(newToken);
 
-        return cookieUtil.createCookieWithToken(newAccessToken, TokenType.ACCESS_TOKEN);
+        User source = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
+
+        return modelMapper.map(source, SilentRefreshResponseData.class);
     }
 
     /**

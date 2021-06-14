@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.MalformedJwtException;
 import kr.ac.pcu.cyber.userservice.domain.dto.AuthResponseData;
 import kr.ac.pcu.cyber.userservice.domain.dto.RegisterRequestData;
+import kr.ac.pcu.cyber.userservice.domain.dto.SilentRefreshResponseData;
 import kr.ac.pcu.cyber.userservice.errors.EmptyCookieException;
 import kr.ac.pcu.cyber.userservice.errors.InvalidTokenException;
 import kr.ac.pcu.cyber.userservice.errors.TokenExpiredException;
@@ -21,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -89,8 +91,15 @@ class AuthenticationControllerTest {
         given(authenticationService.register(any(RegisterRequestData.class)))
                 .willReturn(authResponseData);
 
-        given(authenticationService.silentRefresh(any(HttpServletRequest.class))).will(invocation -> {
+        given(authenticationService.silentRefresh(any(HttpServletRequest.class), any(HttpServletResponse.class))).will(invocation -> {
             HttpServletRequest request = invocation.getArgument(0);
+            HttpServletResponse response = invocation.getArgument(1);
+
+            SilentRefreshResponseData responseData = SilentRefreshResponseData.builder()
+                    .id(1004L)
+                    .nickname("James")
+                    .profileImage("https://cdn.kakao.com")
+                    .build();
 
             if(request.getCookies() == null) {
                 throw new EmptyCookieException();
@@ -101,7 +110,7 @@ class AuthenticationControllerTest {
             }else if(request.getCookies()[1].getValue().equals(INVALID_TOKEN)) {
                 throw new InvalidTokenException(INVALID_TOKEN);
             } else {
-                return cookie;
+                return responseData;
             }
         });
 
@@ -171,7 +180,10 @@ class AuthenticationControllerTest {
                         .cookie(accessCookie)
                         .cookie(refreshCookie))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("id").exists())
+                .andExpect(jsonPath("nickname").exists())
+                .andExpect(jsonPath("profileImage").exists());
     }
 
     @Test

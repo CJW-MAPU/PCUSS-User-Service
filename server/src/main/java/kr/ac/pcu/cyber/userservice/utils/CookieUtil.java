@@ -1,17 +1,16 @@
 package kr.ac.pcu.cyber.userservice.utils;
 
-import io.jsonwebtoken.Claims;
 import kr.ac.pcu.cyber.userservice.errors.EmptyCookieException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.Cookie;
+import java.util.Locale;
 
 @Component
 public class CookieUtil {
 
     private final int ONE_DAY = 1000 * 60 * 60 * 24;
-    private final int ONE_MONTH = (1000 * 60 * 60 * 24) * 30;
+    private final int TWO_WEEK = 1000 * 60 * 60 * 24 * 14;
 
     /**
      * 쿠키 배열로부터 토큰을 파싱한다.
@@ -26,9 +25,9 @@ public class CookieUtil {
         String cookieName;
 
         if(tokenType.equals(TokenType.ACCESS_TOKEN)) {
-            cookieName = TokenType.ACCESS_TOKEN.toString().toLowerCase();
+            cookieName = String.valueOf(TokenType.ACCESS_TOKEN).toLowerCase();
         }else if(tokenType.equals(TokenType.REFRESH_TOKEN)) {
-            cookieName = TokenType.REFRESH_TOKEN.toString().toLowerCase();
+            cookieName = String.valueOf(TokenType.REFRESH_TOKEN).toLowerCase();
         }else {
             cookieName = "empty";
         }
@@ -38,7 +37,6 @@ public class CookieUtil {
                 return cookie.getValue();
             }
         }
-
 
         throw new EmptyCookieException();
     }
@@ -54,11 +52,11 @@ public class CookieUtil {
         Cookie cookie;
 
         if(tokenType.equals(TokenType.ACCESS_TOKEN)) {
-            cookie = new Cookie(TokenType.ACCESS_TOKEN.toString().toLowerCase(), token);
+            cookie = new Cookie(String.valueOf(TokenType.ACCESS_TOKEN).toLowerCase(), token);
             cookie.setMaxAge(ONE_DAY);
         }else {
-            cookie = new Cookie(TokenType.REFRESH_TOKEN.toString().toLowerCase(), token);
-            cookie.setMaxAge(ONE_MONTH);
+            cookie = new Cookie(String.valueOf(TokenType.REFRESH_TOKEN).toLowerCase(), token);
+            cookie.setMaxAge(TWO_WEEK);
         }
 
         cookie.setPath("/");
@@ -78,9 +76,9 @@ public class CookieUtil {
         String cookieName = "empty";
 
         if(tokenType.equals(TokenType.ACCESS_TOKEN)) {
-            cookieName = TokenType.ACCESS_TOKEN.toString().toLowerCase();
+            cookieName = String.valueOf(TokenType.ACCESS_TOKEN).toLowerCase();
         }else if(tokenType.equals(TokenType.REFRESH_TOKEN)) {
-            cookieName = TokenType.REFRESH_TOKEN.toString().toLowerCase();
+            cookieName = String.valueOf(TokenType.REFRESH_TOKEN).toLowerCase();
         }
 
         for(Cookie cookie : cookies) {
