@@ -66,7 +66,7 @@ public class CookieUtil {
     }
 
     /**
-     * 쿠키에 존재하는 토큰을 만료시킨다.
+     * 쿠키에 존재하는 토큰을 만료시킨다.  
      *
      * @param cookies : request 의 쿠키 배열
      * @param tokenType : 만료시킬 토큰의 타입

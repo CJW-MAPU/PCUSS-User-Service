@@ -61,7 +61,7 @@ public class AuthenticationService {
 
         AuthResponseData responseData = modelMapper.map(user, AuthResponseData.class);
         tokenDispenser(jwtUtil, responseData);
-
+        // 제발 잘하자
         return responseData;
     }
 
@@ -135,7 +135,7 @@ public class AuthenticationService {
      * @return userId : accessToken 이 담긴 cookie 에서 토큰을 파싱하고 userId 를 반환한다.
      */
     public String parseUserIdFromCookies(Cookie[] cookies) {
-        String accessToken = cookieUtil.parseTokenFromCookies(cookies, TokenType.REFRESH_TOKEN);
+        String accessToken = cookieUtil.parseTokenFromCookies(cookies, TokenType.ACCESS_TOKEN);
         Claims claims = jwtUtil.parseToken(accessToken);
         return claims.get("userId", String.class);
     }

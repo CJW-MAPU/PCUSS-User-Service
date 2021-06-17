@@ -21,10 +21,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import javax.servlet.http.Cookie;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -82,6 +84,12 @@ class UserControllerTest {
 
         given(userService.modifyUser(eq(VALID_ID), any(ModifyRequestData.class), eq(INVALID_USER_ID)))
                 .willThrow(AccessDeniedException.class);
+
+        given(authenticationService.getRoles(VALID_USER_ID))
+                .willReturn(List.of(new Role(RoleType.USER)));
+
+        given(authenticationService.getRoles(INVALID_USER_ID))
+                .willThrow(UserNotFoundException.class);
     }
 
     @Test
@@ -150,5 +158,21 @@ class UserControllerTest {
                         .content(objectMapper.writeValueAsString(requestData)))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("getRole 정상")
+    void getRole_valid() throws Exception {
+        mockMvc.perform(get("/users/{userId}/roles", VALID_USER_ID))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("role 조회 실패 - 존재하지 않는 사용자")
+    void getRole_invalid_with_user_not_found() throws Exception {
+        mockMvc.perform(get("/users/{userId}/roles", INVALID_USER_ID))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
     }
 }
