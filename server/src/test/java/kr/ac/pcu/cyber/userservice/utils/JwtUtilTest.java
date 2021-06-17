@@ -29,6 +29,7 @@ class JwtUtilTest {
             "75VsVNYXpd7_SZDS1jZFh_4LVaFmRzZmW5XFfpWKC5g";
     ;
 
+
     @BeforeEach
     void setUp() {
         jwtUtil = new JwtUtil(SECRET);
